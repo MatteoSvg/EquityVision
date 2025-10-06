@@ -1,6 +1,5 @@
 import sqlite3
 import os
-import unicodedata
 class DatabaseManager:
     def __init__(self):
         db_path = os.path.join(os.path.dirname(__file__), "equityvision")
@@ -45,8 +44,7 @@ class DatabaseManager:
         self.conn.commit()
 
     def find_company_id(self, name):
-        self.cursor.execute("SELECT id FROM companies WHERE name = ?", (name,))
-        self.conn.commit()
+        return self.cursor.execute("SELECT id FROM companies WHERE name = ?", (name,)).fetchone()[0]
        
 
 

@@ -14,11 +14,10 @@ class RecommendationScraper:
             9: "settembre", 10: "ottobre", 11: "novembre", 12: "dicembre",
         }
 
-    def fetch(self, start_date=date(2025, 9, 22), end_date=None):
+    def fetch(self, db, start_date=date(2025, 9, 22), end_date=None):
         if end_date is None:
             end_date = date.today()
-        
-        db = DatabaseManager()
+
         recommendations = []
         next_date = start_date
 
