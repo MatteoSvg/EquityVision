@@ -1,0 +1,70 @@
+import sqlite3
+import os
+import unicodedata
+class DatabaseManager:
+    def __init__(self):
+        db_path = os.path.join(os.path.dirname(__file__), "equityvision")
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"Database non trovato: {db_path}")
+        self.conn = sqlite3.connect(db_path)
+        self.cursor = self.conn.cursor()
+        self.create_tables()
+
+    def create_tables(self):
+        self.cursor.execute(" DROP TABLE IF EXISTS companies")
+        self.cursor.execute("""
+            CREATE TABLE companies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                market_price REAL NOT NULL
+            )
+        """)
+        self.cursor.execute("DROP TABLE IF EXISTS recommendations")
+        self.cursor.execute("""
+            CREATE TABLE recommendations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company_id INTEGER NOT NULL,
+                bank TEXT NOT NULL,
+                target_price REAL,
+                date DATE NOT NULL,
+                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(id)
+            )
+        """)
+        self.conn.commit()
+        
+    
+    def save_ftse_list(self, ftse_list):
+        for company, price in ftse_list:
+            try:
+                self.cursor.execute(
+                "INSERT INTO companies (name, market_price) VALUES (?, ?)",
+                (company, price)
+            )
+            except sqlite3.Error as e:
+                print("Errore durante l'inserimento: ", e)
+        self.conn.commit()
+
+    def find_company_id(self, name):
+        self.cursor.execute("SELECT id FROM companies WHERE name = ?", (name,))
+        self.conn.commit()
+       
+
+
+
+    def save_recommendations(self, recomm_list):
+        for id_company, bank, target_price, next_date in recomm_list:
+            try:
+                self.cursor.execute(
+                "INSERT INTO recommendations (company_id, bank, target_price, date) VALUES (?, ?, ?, ?)",
+                (id_company, bank, target_price, next_date)
+            )
+            except sqlite3.Error as e:
+                print("Errore durante l'inserimento: ", e)
+        self.conn.commit()
+        
+    def close(self):
+        self.conn.close()
+
+
+
+    
