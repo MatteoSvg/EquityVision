@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 class DatabaseManager:
     def __init__(self):
         db_path = os.path.join(os.path.dirname(__file__), "equityvision")
@@ -45,9 +46,17 @@ class DatabaseManager:
 
     def find_company_id(self, name):
         return self.cursor.execute("SELECT id FROM companies WHERE name = ?", (name,)).fetchone()[0]
+    
+    def find_last_date(self):
+        self.cursor.execute("SELECT MAX(date) FROM recommendations")
+        result = self.cursor.fetchone()
+        print(result)
+        if result and result[0]:
+            return datetime.strptime(result[0], "%Y-%m-%d").date()
+        return None
+
+        
        
-
-
 
     def save_recommendations(self, recomm_list):
         for id_company, bank, target_price, next_date in recomm_list:
