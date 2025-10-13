@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
+import re
 class RecommendationScraper:
     """Classe per estrarre le raccomandazioni dal sito soldionline.it"""
     
@@ -52,15 +53,25 @@ class RecommendationScraper:
 
             for row in rows:
                 cells = row.find_all("td")
-                society = cells[0].text.strip().upper()
+
+                link = cells[0].find("a")
+                if link and link.get("href", ""):
+                    href = link["href"]
+                    isin_match = re.search(r"([A-Z]{2}[A-Z0-9]{10})", href)
+                    isin = isin_match.group(1) if isin_match else None
+
                 bank = cells[1].text.strip()
                 target_price = cells[3].text.strip().replace("▲", "").replace("▼", "")
 
-                # filtro solo società FTSE
-                for i in range(len(self.ftse_list)):
-                    if society == self.ftse_list[i][0]:
-                        id_company = db.find_company_id(society)
-                        recommendations.append((id_company, bank, target_price, next_date))
+                 # Filtro solo società FTSE (match su ISIN)
+                if isin:
+                    for ftse_item in self.ftse_list:
+                        if ftse_item[0] == isin:
+                            id_company = db.find_company_id(isin)
+                            recommendations.append(
+                                (id_company, bank, target_price, next_date)
+                            )
+                            break  # trovato il match → esci dal loop
                         
             next_date += timedelta(days=1)
 

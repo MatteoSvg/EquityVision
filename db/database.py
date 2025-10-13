@@ -14,7 +14,7 @@ class DatabaseManager:
         self.cursor.execute(" DROP TABLE IF EXISTS companies")
         self.cursor.execute("""
             CREATE TABLE companies (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                isin TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
                 market_price REAL NOT NULL
             )
@@ -23,29 +23,34 @@ class DatabaseManager:
         self.cursor.execute("""
             CREATE TABLE recommendations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                company_id INTEGER NOT NULL,
+                company_id TEXT NOT NULL,
                 bank TEXT NOT NULL,
                 target_price REAL,
                 date DATE NOT NULL,
-                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(id)
+                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(isin)
             )
         """)
         self.conn.commit()
         
     
     def save_ftse_list(self, ftse_list):
-        for company, price in ftse_list:
+        for isin, company, price in ftse_list:
             try:
                 self.cursor.execute(
-                "INSERT INTO companies (name, market_price) VALUES (?, ?)",
-                (company, price)
+                "INSERT INTO companies (isin, name, market_price) VALUES (?, ?, ?)",
+                (isin, company, price)
             )
             except sqlite3.Error as e:
                 print("Errore durante l'inserimento: ", e)
         self.conn.commit()
 
-    def find_company_id(self, name):
-        return self.cursor.execute("SELECT id FROM companies WHERE name = ?", (name,)).fetchone()[0]
+    def find_company_id(self, isin):
+        """Restituisce il codice ISIN se esiste nella tabella companies, altrimenti None."""
+        result = self.cursor.execute(
+            "SELECT isin FROM companies WHERE isin = ?", (isin,)
+        ).fetchone()
+        return result[0] if result else None
+
     
     def find_last_date(self):
         self.cursor.execute("SELECT MAX(date) FROM recommendations")
