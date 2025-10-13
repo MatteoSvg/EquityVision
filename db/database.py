@@ -68,6 +68,9 @@ class DatabaseManager:
             except sqlite3.Error as e:
                 print("Errore durante l'inserimento: ", e)
         self.conn.commit()
+
+    def find_recommendations(self):
+        return self.cursor.execute("SELECT c.name, r.bank, r.target_price, r.date FROM recommendations r JOIN companies c ON r.company_id = c.id").fetchall()
         
     def close(self):
         self.conn.close()

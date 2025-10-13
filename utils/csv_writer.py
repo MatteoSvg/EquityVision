@@ -1,9 +1,10 @@
 import csv
 
-def export_recommendations(recommendations):
+def export_recommendations(db):
+    recommendations = db.find_recommendations()
     with open("data/recommendations.csv", mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["company_id", "bank", "target_price", "date"])
+        writer.writerow(["name", "bank", "target_price", "date"])
         # Scrive ogni tupla come una riga nel file
         writer.writerows(recommendations)
 
