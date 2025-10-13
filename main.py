@@ -12,5 +12,5 @@ if __name__ == "__main__":
     recomm_scraper = RecommendationScraper(ftse_list)
     recomm_list = recomm_scraper.fetch(db, date(2025,9,1), date(2025,9,30))
     db.save_recommendations(recomm_list)
-    csv_writer.export_recommendations(recomm_list)
+    csv_writer.export_recommendations(db)
     db.close()
