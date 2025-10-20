@@ -24,7 +24,7 @@ class RecommendationScraper:
         recommendations = []
         next_date = start_date
 
-        while next_date < end_date:
+        while next_date <= end_date:
             url = (f"https://www.soldionline.it/notizie/azioni-italia/"
                    f"le-raccomandazioni-del-{next_date.day}-"
                    f"{self.mesi[next_date.month]}-{next_date.year}")

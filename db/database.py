@@ -20,17 +20,17 @@ class DatabaseManager:
                 market_price REAL NOT NULL
             )
         """)
-        self.cursor.execute("DROP TABLE IF EXISTS recommendations")
-        self.cursor.execute("""
-            CREATE TABLE recommendations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                company_id TEXT NOT NULL,
-                bank TEXT NOT NULL,
-                target_price REAL,
-                date DATE NOT NULL,
-                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(id)
-            )
-        """)
+        # self.cursor.execute("DROP TABLE IF EXISTS recommendations")
+        # self.cursor.execute("""
+        #     CREATE TABLE recommendations (
+        #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #         company_id TEXT NOT NULL,
+        #         bank TEXT NOT NULL,
+        #         target_price REAL,
+        #         date DATE NOT NULL,
+        #         CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(id)
+        #     )
+        # """)
         self.conn.commit()
         
     
