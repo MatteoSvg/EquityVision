@@ -53,7 +53,7 @@ class RecommendationScraper:
 
             for row in rows:
                 cells = row.find_all("td")
-
+    
                 link = cells[0].find("a")
                 if link and link.get("href", ""):
                     href = link["href"]

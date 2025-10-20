@@ -14,7 +14,8 @@ class DatabaseManager:
         self.cursor.execute(" DROP TABLE IF EXISTS companies")
         self.cursor.execute("""
             CREATE TABLE companies (
-                isin TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                isin TEXT,
                 name TEXT NOT NULL,
                 market_price REAL NOT NULL
             )
@@ -27,7 +28,7 @@ class DatabaseManager:
                 bank TEXT NOT NULL,
                 target_price REAL,
                 date DATE NOT NULL,
-                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(isin)
+                CONSTRAINT FK_recommendations_companies FOREIGN KEY (company_id) REFERENCES companies(id)
             )
         """)
         self.conn.commit()
@@ -47,7 +48,7 @@ class DatabaseManager:
     def find_company_id(self, isin):
         """Restituisce il codice ISIN se esiste nella tabella companies, altrimenti None."""
         result = self.cursor.execute(
-            "SELECT isin FROM companies WHERE isin = ?", (isin,)
+            "SELECT id FROM companies WHERE isin = ?", (isin,)
         ).fetchone()
         return result[0] if result else None
 
