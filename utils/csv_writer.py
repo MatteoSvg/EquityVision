@@ -13,5 +13,6 @@ def export_stocks(stocks_list):
     with open("data/ftse.csv", mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["name", "market_price"])
-        # Scrive ogni tupla come una riga nel file
-        writer.writerows(stocks_list)
+        for stock in stocks_list:
+            writer.writerow([stock[1], stock[2]])
+        
