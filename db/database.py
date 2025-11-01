@@ -61,9 +61,6 @@ class DatabaseManager:
             return datetime.strptime(result[0], "%Y-%m-%d").date()
         return None
 
-        
-       
-
     def save_recommendations(self, recomm_list):
         for id_company, bank, target_price, next_date in recomm_list:
             try:
@@ -76,7 +73,7 @@ class DatabaseManager:
         self.conn.commit()
 
     def find_recommendations(self):
-        return self.cursor.execute("SELECT c.name, r.bank, r.target_price, r.date FROM recommendations r JOIN companies c ON r.company_id = c.id").fetchall()
+        return self.cursor.execute("SELECT c.name, r.bank, r.target_price, r.date, c.market_price FROM recommendations r JOIN companies c ON r.company_id = c.id").fetchall()
         
     def close(self):
         self.conn.close()
