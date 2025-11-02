@@ -99,7 +99,7 @@ class EquityVisionGUI:
         # Configurazione colonne
         self.tree.heading('Azienda', text='Azienda', command=lambda: self.sort_column('Azienda', False))
         self.tree.heading('Banca', text='Banca', command=lambda: self.sort_column('Banca', False))
-        self.tree.heading('Target Price', text='Target Price', command=lambda: self.sort_column('Target Price', False))
+        self.tree.heading('Target Price', text='Target Price')
         self.tree.heading('Data', text='Data', command=lambda: self.sort_column('Data', False))
         self.tree.heading('Market Price', text='Market Price')
         
@@ -204,15 +204,13 @@ class EquityVisionGUI:
     
     def sort_column(self, col, reverse):
         """Ordina la tabella per colonna"""
-        col_index = {'Azienda': 0, 'Banca': 1, 'Target Price': 2, 'Data': 3}
+        col_index = {'Azienda': 0, 'Banca': 1, 'Data': 2}
         idx = col_index[col]
-        
+         
         try:
             # Ordina i dati
             if col == 'Data':
                 self.filtered_data.sort(key=lambda x: self.parse_date(x[idx]), reverse=reverse)
-            elif col == 'Target Price':
-                self.filtered_data.sort(key=lambda x: float(x[idx].replace(',', '.')) if x[idx] else 0, reverse=reverse)
             else:
                 self.filtered_data.sort(key=lambda x: x[idx], reverse=reverse)
             
