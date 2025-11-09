@@ -15,6 +15,7 @@ from datetime import datetime
 
 class EquityVisionGUI:
     def __init__(self, db):
+        
         self.db = db
         self.root = tk.Tk()
         self.root.title("EquityVision")
