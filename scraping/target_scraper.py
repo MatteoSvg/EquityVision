@@ -3,9 +3,16 @@ from bs4 import BeautifulSoup
 from datetime import date, timedelta
 import re
 class RecommendationScraper:
-    """Classe per estrarre le raccomandazioni dal sito soldionline.it"""
     
     def __init__(self, ftse_list):
+        '''
+        Metodo: __init__
+        Costruttore della classe RecommendationScraper.
+        Parametri formali:
+        list ftse_list -> Lista dei titoli FTSE MIB (usata per filtrare le raccomandazioni).
+        Valore di ritorno:
+        None -> Nessun valore di ritorno.
+        '''
         self.ftse_list = ftse_list
         self.headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64)"}
         self.mesi = {
@@ -14,8 +21,17 @@ class RecommendationScraper:
             9: "settembre", 10: "ottobre", 11: "novembre", 12: "dicembre",
         }
 
-    def fetch(self, db, start_date=None, end_date=None):
-    
+    def fetch(self, db, start_date=None, end_date=None) -> list:
+        '''
+        Funzione: fetch
+        Esegue lo scraping delle raccomandazioni da soldionline.it per un intervallo di date.
+        Parametri formali:
+        object db -> Oggetto database per recuperare l'ultima data e gli ID azienda
+        date start_date -> (Opzionale) Data da cui iniziare lo scraping. Default: giorno dopo l'ultima data nel db.
+        date end_date -> (Opzionale) Data in cui terminare lo scraping. Default: data odierna.
+        Valore di ritorno:
+        list -> Lista di tuple contenenti le raccomandazioni (id_company, bank, target_price, date).
+        '''
         if start_date is None:
             start_date = db.find_last_date() + timedelta(days=1)
         if end_date is None:
@@ -28,18 +44,15 @@ class RecommendationScraper:
             url = (f"https://www.soldionline.it/notizie/azioni-italia/"
                    f"le-raccomandazioni-del-{next_date.day}-"
                    f"{self.mesi[next_date.month]}-{next_date.year}")
-            print(url)
             response = requests.get(url, headers=self.headers, timeout=15)
          
             if(response.status_code == 404):
                 url = (f"https://www.soldionline.it/notizie/azioni-italia/"
                    f"le-raccomandazioni-dell-{next_date.day}-"
                    f"{self.mesi[next_date.month]}-{next_date.year}")
-                print(f"Tentativo alternativo: {url}")
                 response = requests.get(url, headers=self.headers, timeout=15)
 
             if response.status_code == 404:
-                print("Nessuna pagina trovata")
                 next_date += timedelta(days=1)
                 continue
 
@@ -71,7 +84,7 @@ class RecommendationScraper:
                             recommendations.append(
                                 (id_company, bank, target_price, next_date)
                             )
-                            break  # trovato il match → esci dal loop
+                            break
                         
             next_date += timedelta(days=1)
 
