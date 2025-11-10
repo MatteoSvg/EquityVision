@@ -4,7 +4,7 @@ from datetime import datetime, date
 class DatabaseManager:
     def __init__(self):
         '''
-        Costruttore: __init__
+        Metodo: __init__
         Inizializza il gestore del database SQLite
         Parametri formali:
         Nessuno
@@ -133,7 +133,7 @@ class DatabaseManager:
         
     def close(self):
         '''
-        Funzione: close
+        Metodo: close
         Chiude la connessione al database
         Parametri formali:
         Nessuno
