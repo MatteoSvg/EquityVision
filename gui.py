@@ -77,10 +77,11 @@ class EquityVisionGUI:
         self.date_combo.current(0)
         self.date_combo.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
         
-       
+       #creazione del frame che contiene i pulsanti
         button_frame = ttk.Frame(filter_frame)
         button_frame.grid(row=1, column=2, columnspan=2, padx=5, pady=5, sticky=tk.E)
         
+        # creazione dei pulsanti
         ttk.Button(button_frame, text="Applica Filtri", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="Reset Filtri", command=self.reset_filters).pack(side=tk.LEFT, padx=5)
         
@@ -88,12 +89,13 @@ class EquityVisionGUI:
         ttk.Button(button_frame, text="Esporta PDF", command=self.export_pdf).pack(side=tk.LEFT, padx=5)
         
       
+      #creazione del frame che conterrà la tabella e le scrollbar
         table_frame = ttk.Frame(main_frame)
         table_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
         table_frame.columnconfigure(0, weight=1)
         table_frame.rowconfigure(0, weight=1)
         
-       
+       #creazione delle scrollbar
         scrollbar_y = ttk.Scrollbar(table_frame, orient=tk.VERTICAL)
         scrollbar_y.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
@@ -106,16 +108,18 @@ class EquityVisionGUI:
                                  yscrollcommand=scrollbar_y.set,
                                  xscrollcommand=scrollbar_x.set)
         
+        #quando muovi le scrollbar la tabelle scorre
         scrollbar_y.config(command=self.tree.yview)
         scrollbar_x.config(command=self.tree.xview)
         
-        
+        #metodo per interrogare o modificare le opzioni di intestazione di una colonna
         self.tree.heading('Azienda', text='Azienda', command=lambda: self.sort_column('Azienda', False))
         self.tree.heading('Banca', text='Banca', command=lambda: self.sort_column('Banca', False))
         self.tree.heading('Target Price', text='Target Price')
         self.tree.heading('Data', text='Data', command=lambda: self.sort_column('Data', False))
         self.tree.heading('Market Price', text='Market Price')
         
+        #metodo per modificare le opzioni di una colonna
         self.tree.column('Azienda', width=300)
         self.tree.column('Banca', width=250)
         self.tree.column('Target Price', width=150)
@@ -125,6 +129,7 @@ class EquityVisionGUI:
         self.tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
        
+       #etichetta vuota per mostrare il totale delle raccomandazioni visualizzate
         self.info_label = ttk.Label(main_frame, text="")
         self.info_label.grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=(10, 0))
     
@@ -142,15 +147,15 @@ class EquityVisionGUI:
             all_data = self.db.find_recommendations()
             self.filtered_data = all_data
             
-            
+            #Estrae tutte le aziende univoche (usa set per eliminare duplicati), poi le ordina alfabeticamente
             companies = sorted(set(row[0] for row in all_data))
-            self.name_combo['values'] = ['Tutte'] + companies
-            self.name_combo.current(0)
+            self.name_combo['values'] = ['Tutte'] + companies #imposto i valori nella combobox
+            self.name_combo.current(0) #come default prendi il primo
             
-           
+           #Estrae tutte le banche univoche (usa set per eliminare duplicati), poi le ordina alfabeticamente
             banks = sorted(set(row[1] for row in all_data))
-            self.bank_combo['values'] = ['Tutte'] + banks
-            self.bank_combo.current(0)
+            self.bank_combo['values'] = ['Tutte'] + banks #imposto i valori nella combobox
+            self.bank_combo.current(0) #come default prendi il primo
             
             self.update_table()
         except Exception as e:
@@ -166,12 +171,16 @@ class EquityVisionGUI:
         Valore di ritorno:
         None -> Nessun valore di ritorno.
         '''
+
+        #prende tutte le righe della tabella e le cancella una per una
         for item in self.tree.get_children():
             self.tree.delete(item)
         
+        #inserisce i dati filtrati
         for row in self.filtered_data:
             self.tree.insert('', tk.END, values=row)
         
+        #configura la label informativa
         self.info_label.config(text=f"Totale raccomandazioni visualizzate: {len(self.filtered_data)}")
     
     def apply_filters(self):
@@ -188,15 +197,15 @@ class EquityVisionGUI:
             all_data = self.db.find_recommendations()
             filtered = all_data
             
-            selected_company = self.name_var.get()
+            selected_company = self.name_var.get() #prendo il valore dell'azienda selezionato nella combox
             if selected_company and selected_company != 'Tutte':
-                filtered = [row for row in filtered if row[0] == selected_company]
+                filtered = [row for row in filtered if row[0] == selected_company] #memorizzo nella lista solo le raccomandazioni per l'azienda selezionata
             
-            selected_bank = self.bank_var.get()
+            selected_bank = self.bank_var.get() #prendo il valore della banca selezionato nella combox
             if selected_bank and selected_bank != 'Tutte':
-                filtered = [row for row in filtered if row[1] == selected_bank]
+                filtered = [row for row in filtered if row[1] == selected_bank] #memorizzo nella lista solo le raccomandazioni per la banca selezionata
             
-            selected_period = self.date_var.get()
+            selected_period = self.date_var.get() #prendo il valore del periodo selezionato nella combox
             if selected_period != 'Tutti':
                 today = date.today()
                 
@@ -263,12 +272,15 @@ class EquityVisionGUI:
          
         try:
             if col == 'Data':
+                #lambda x: crea una funzione anonima che estrae il valore da usare per l'ordinamento.
                 self.filtered_data.sort(key=lambda x: self.parse_date(x[idx]), reverse=reverse)
             else:
+                #Per le altre colonne, ordina direttamente per il valore nella posizione idx
                 self.filtered_data.sort(key=lambda x: x[idx], reverse=reverse)
             
             self.update_table()
             
+            #Aggiorna il comando dell'intestazione: al prossimo click, inverte l'ordinamento
             self.tree.heading(col, command=lambda: self.sort_column(col, not reverse))
         except Exception as e:
             messagebox.showerror("Errore", f"Errore nell'ordinamento: {str(e)}")
@@ -296,10 +308,10 @@ class EquityVisionGUI:
                 messagebox.showwarning("Attenzione", "Selezionare una singola azienda per visualizzare il grafico.")
                 return
             
-            company_name = list(companies)[0]
+            company_name = list(companies)[0] #Estrae il nome dell'unica azienda presente.
             
-            date_target_map = defaultdict(list)
-            date_market_map = {}
+            date_target_map = defaultdict(list) #chiave=data, valore=lista di target price (perché ci possono essere più raccomandazioni nella stessa data)
+            date_market_map = {} #chiave=data, valore=market price (un solo valore per data)
             
             for row in self.filtered_data:
                 date_obj = self.parse_date(row[3])
@@ -319,7 +331,7 @@ class EquityVisionGUI:
                     pass
             
             dates_target = []
-            avg_target_prices = []
+            avg_target_prices = [] #lista dei target price medi
             for date_obj in sorted(date_target_map.keys()):
                 dates_target.append(date_obj)
                 avg_target_prices.append(sum(date_target_map[date_obj]) / len(date_target_map[date_obj]))
@@ -331,29 +343,33 @@ class EquityVisionGUI:
                 messagebox.showwarning("Attenzione", "Nessun dato numerico valido da visualizzare.")
                 return
             
-            self.current_figure = plt.figure(figsize=(12, 6))
+            self.current_figure = plt.figure(figsize=(12, 6)) #Crea una figura matplotlib di dimensioni 12×6 pollici.
                 
+            #disegno la linea dei target price
             if dates_target:
                 plt.plot(dates_target, avg_target_prices, marker='o', linestyle='-', 
                         linewidth=2, markersize=6, label='Target Price', color='#2E86AB')
             
+            #disegno la linea del market price
             if dates_market:
                 plt.plot(dates_market, market_prices, linestyle='-', 
                         linewidth=2, markersize=6, label='Market Price', color="#FF0000")
             
+            #imposto il titolo del grafico
             plt.title(f'Confronto prezzo di mercato con raccomandazioni - {company_name}', fontsize=16, fontweight='bold', pad=20)
             plt.ylabel('Euro', fontsize=12, fontweight='bold')
-            plt.legend(loc='best', fontsize=10, framealpha=0.9)
+            plt.legend(loc='best', fontsize=10, framealpha=0.9) #Aggiunge la legenda nella posizione migliore (best), con trasparenza 0.9.
             plt.grid(True, alpha=0.3, linestyle='--')
             
+            #Formatta le date sull'asse X nel formato giorno/mese/anno.
             ax = plt.gca()
             date_formatter = DateFormatter('%d/%m/%Y')
             ax.xaxis.set_major_formatter(date_formatter)
-            plt.xticks(rotation=45, ha='right')
+            plt.xticks(rotation=45, ha='right') #Ruota le etichette dell'asse X di 45° e le allinea a destra per evitare sovrapposizioni.
             
-            plt.tight_layout()
+            plt.tight_layout() #Ottimizza automaticamente gli spazi per evitare che etichette vengano tagliate.
             
-            plt.show()
+            plt.show() #mostra il grafico
             
         except Exception as e:
             messagebox.showerror("Errore", f"Errore nella generazione del grafico: {str(e)}")
@@ -376,10 +392,10 @@ class EquityVisionGUI:
             filename = f"raccomandazioni_{date.today().strftime('%Y%m%d')}.pdf"
             
             doc = SimpleDocTemplate(filename, pagesize=A4)
-            elements = []
+            elements = [] #lista di elementi da inserire
             
-            styles = getSampleStyleSheet()
-            title_style = styles['Heading1']
+            styles = getSampleStyleSheet() #mi salvo gli stili predefiniti
+            title_style = styles['Heading1'] #utilizzo questo stile per il titolo
             
             title = Paragraph("Raccomandazioni EquityVision", title_style)
             elements.append(title)
@@ -394,6 +410,7 @@ class EquityVisionGUI:
             for row in self.filtered_data:
                 data.append(list(row))
             
+            #Crea una tabella specificando le larghezze delle colonne in centimetri.
             table = Table(data, colWidths=[5*cm, 4*cm, 3*cm, 3*cm])
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
@@ -410,7 +427,7 @@ class EquityVisionGUI:
             
             elements.append(table)
             
-            doc.build(elements)
+            doc.build(elements) #costruisci il pdf
             
             messagebox.showinfo("Successo", f"PDF esportato con successo:\n{os.path.abspath(filename)}")
             
