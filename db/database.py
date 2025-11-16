@@ -96,7 +96,6 @@ class DatabaseManager:
         '''
         self.cursor.execute("SELECT MAX(date) FROM recommendations")
         result = self.cursor.fetchone()
-        print(result)
         if result and result[0]:
             return datetime.strptime(result[0], "%Y-%m-%d").date()
         return None
