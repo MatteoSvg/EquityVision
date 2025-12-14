@@ -50,7 +50,6 @@ class DatabaseManager:
         # """)
         self.conn.commit() #serve per salvare in modo permanente le modifiche fatte al database durante la connessione.
         
-    
     def save_ftse_list(self, ftse_list):
         '''
         Metodo: save_ftse_list

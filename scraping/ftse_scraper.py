@@ -50,7 +50,7 @@ class FTSEScraper:
                 isin = None
 
             prezzo = cells[1].text.strip() if len(cells) > 1 else None #estraggo il prezzo se c'è una seconda cella, tolgo spazi e lo salvo
-
+           
             self.data.append((isin, nome, prezzo))
 
         return self.data

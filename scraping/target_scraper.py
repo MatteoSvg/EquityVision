@@ -66,7 +66,6 @@ class RecommendationScraper:
 
             for row in rows:
                 cells = row.find_all("td")
-    
                 link = cells[0].find("a")
                 if link and link.get("href", ""):
                     href = link["href"]
@@ -74,8 +73,11 @@ class RecommendationScraper:
                     isin = isin_match.group(1) if isin_match else None
 
                 bank = cells[1].text.strip()
-                target_price = cells[3].text.strip().replace("▲", "").replace("▼", "")
+                target_price_str = cells[3].text.strip().replace("▲","").replace("▼","")
 
+                if target_price_str.lower() == "n.d.":
+                    continue 
+                target_price = float(target_price_str)
                  # Filtro solo società FTSE (match su ISIN)
                 if isin:
                     for ftse_item in self.ftse_list:

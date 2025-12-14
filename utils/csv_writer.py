@@ -21,7 +21,7 @@ def export_recommendations(db):
     recommendations = db.find_recommendations()
     with open(file_path, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f) #mi salvo l'oggetto writer per scrivere sul file
-        writer.writerow(["name", "bank", "target_price", "date"])
+        writer.writerow(["name", "bank", "target_price", "date", "market_price"])
         # Scrive ogni tupla come una riga nel file
         writer.writerows(recommendations)
 
