@@ -22,8 +22,15 @@ def export_recommendations(db):
     with open(file_path, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f) #mi salvo l'oggetto writer per scrivere sul file
         writer.writerow(["name", "bank", "target_price", "date", "market_price"])
-        # Scrive ogni tupla come una riga nel file
-        writer.writerows(recommendations)
+          # Scrive ogni tupla come una riga nel file, convertendo i decimali con la virgola
+        for rec in recommendations:
+            # Converte la tupla in lista per poterla modificare
+            row = list(rec)
+            # Converte target_price (indice 2) da punto a virgola
+            if row[2] is not None:
+                row[2] = str(row[2]).replace('.', ',')
+            # Scrive ogni tupla come una riga nel file
+            writer.writerow(row)
 
 def export_stocks(stocks_list):
     '''
