@@ -145,8 +145,7 @@ class EquityVisionGUI:
         '''
         try:
             all_data = self.db.find_recommendations()
-            self.filtered_data = all_data
-            
+            self.filtered_data = all_data     
             #Estrae tutte le aziende univoche (usa set per eliminare duplicati), poi le ordina alfabeticamente
             companies = sorted(set(row[0] for row in all_data))
             self.name_combo['values'] = ['Tutte'] + companies #imposto i valori nella combobox
@@ -178,6 +177,12 @@ class EquityVisionGUI:
         
         #inserisce i dati filtrati
         for row in self.filtered_data:
+            # Converte la tupla in lista per poterla modificare
+            rec = list(row)
+            # Converte target_price (indice 2) da punto a virgola
+            if rec[2] is not None:
+                rec[2] = str(rec[2]).replace('.', ',')
+            row = rec
             self.tree.insert('', tk.END, values=row)
         
         #configura la label informativa
