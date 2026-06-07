@@ -124,7 +124,8 @@ class EquityVisionGUI:
         self.tree.column('Banca', width=250)
         self.tree.column('Target Price', width=150)
         self.tree.column('Data', width=150)
-        self.tree.column('Market Price', width=150)
+        self.tree.column('Market Price', width=0, stretch=False)
+        self.tree.heading('Market Price', text='')
         
         self.tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         

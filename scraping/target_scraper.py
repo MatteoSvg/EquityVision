@@ -73,7 +73,7 @@ class RecommendationScraper:
                     isin = isin_match.group(1) if isin_match else None
 
                 bank = cells[1].text.strip()
-                target_price_str = cells[3].text.strip().replace("▲","").replace("▼","")
+                target_price_str = cells[3].text.strip().replace("▲","").replace("▼","").replace("⬤","")
 
                 if target_price_str.lower() == "n.d.":
                     continue 
